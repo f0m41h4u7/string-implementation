@@ -46,7 +46,7 @@ TEST(StringTest, NullString) {
 TEST(StringTest, OperatorCompare) {
         String str1("abcd");
 	String str2("abcdqwqw");
-        ASSERT_FALSE (str1 == str2);
+        ASSERT_TRUE (str1 != str2);
 }
 
 //************************************************
@@ -114,7 +114,7 @@ TEST(IdentifierTest, OperatorAssign) {
 	id1 = id2;
         ASSERT_STREQ ("cdefgh", id1.getString());
 	ASSERT_EQ (6, id1.getLength());
-	ASSERT_TRUE (id1 == id2);
+	ASSERT_FALSE (id1 != id2);
 }
 
 TEST(IdentifierTest, OperatorMoreEqualLength) {
@@ -124,15 +124,21 @@ TEST(IdentifierTest, OperatorMoreEqualLength) {
 }
 
 TEST(IdentifierTest, OperatorMoreNotEqualLength) {
-        Identifier id1("qwe");
+        Identifier id1("asd");
         Identifier id2("asdfgg");
-        ASSERT_TRUE (id1 > id2);
+        ASSERT_TRUE (id2 > id1);
 }
 
 TEST(IdentifierTest, OperatorMoreEqualValues) {
         Identifier id1("qwerty");
         Identifier id2("qwerty");
         ASSERT_FALSE (id1 > id2);
+}
+
+TEST(IdentifierTest, OperatorLess) {
+        Identifier id1("qwe");
+        Identifier id2("asdfgg");
+        ASSERT_TRUE (id2 < id1);
 }
 
 //************************************************
@@ -202,6 +208,67 @@ TEST(DecimalTest, NullString) {
         } catch(std::bad_alloc const&){}
 
         ASSERT_EQ (nullptr, str);
+}
+
+TEST(DecimalTest, LimitsMax) {
+        DecimalString dec("2147483650000000");
+	ASSERT_FALSE(dec.isInteger());
+}
+
+TEST(DecimalTest, LimitsMin) {
+        DecimalString dec("-2147483650000000");
+        ASSERT_FALSE(dec.isInteger());
+}
+
+TEST(DecimalTest, OperatorMoreNotEqualLength) {
+        DecimalString dec1("1337");
+        DecimalString dec2("31337");
+        ASSERT_TRUE (dec2 > dec1);
+}
+
+TEST(DecimalTest, OperatorMoreEqualLength) {
+        DecimalString dec1("1337");
+        DecimalString dec2("1338");
+        ASSERT_TRUE (dec2 > dec1);
+}
+
+TEST(DecimalTest, OperatorMoreEqualValues) {
+        DecimalString dec1("1337");
+        DecimalString dec2("1337");
+        ASSERT_FALSE (dec1 > dec2);
+	ASSERT_TRUE (dec2 == dec1);
+}
+
+TEST(DecimalTest, OperatorLess) {
+        DecimalString dec1("31337");
+        DecimalString dec2("1337");
+        ASSERT_TRUE (dec2 < dec1);
+}
+
+TEST(DecimalTest, CompareNegativeAndPositive) {
+        DecimalString dec1("-31337");
+        DecimalString dec2("1337");
+        ASSERT_TRUE (dec1 < dec2);
+}
+
+TEST(DecimalTest, CompareNegatives) {
+        DecimalString dec1("-31337");
+        DecimalString dec2("-1337");
+        ASSERT_TRUE (dec2 > dec1);
+}
+
+TEST(DecimalTest, SubtractionPositive) {
+        DecimalString dec1("31337");
+        DecimalString dec2("1337");
+	DecimalString res = dec1 - dec2;
+        ASSERT_STREQ ("30000", res.getString());
+}
+
+TEST(DecimalTest, SubtractionNegative) {
+        DecimalString dec1("-31337");
+        DecimalString dec2("1337");
+        DecimalString res = dec1 - dec2;
+        ASSERT_STREQ ("-32674", res.getString());
 }
 
 int main(int argc, char** argv) {

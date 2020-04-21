@@ -21,6 +21,7 @@ public:
 
 	operator std::string_view() const { return std::string_view(m_address.get(), m_length);}
 	bool operator == (String const&) const;
+	bool operator != (String const&) const;
 
 	char const* getString() const {return m_address.get();};
 	size_t getLength() const {return m_length;};
@@ -41,7 +42,9 @@ public:
 
 	Identifier& operator = (Identifier const&);
 	bool operator > (Identifier const&) const;
+	bool operator < (Identifier const&) const;
 	bool operator == (Identifier const&) const;
+	bool operator != (Identifier const&) const;
 
 	char const* getString() const {return String::getString();};
 	size_t getLength() const {return String::getLength();};
@@ -56,13 +59,19 @@ public:
 	DecimalString(const DecimalString&);
 	~DecimalString();
 
-	static bool isInteger(char const*);
+	bool isInteger() const;
 	static bool isDecimal(char const*);
 
+	void numToStr(int);
+	void reverse(size_t);
+
 	DecimalString& operator = (DecimalString const&);
-//	DecimalString operator - (DecimalString const&, DecimalString const&);
-        bool operator > (DecimalString const&) const;
+	DecimalString& operator - (DecimalString const&);
+
+	bool operator > (DecimalString const&) const;
+	bool operator < (DecimalString const&) const;
 	bool operator == (DecimalString const&) const;
+	bool operator != (DecimalString const&) const;
 
 	char const* getString() const {return String::getString();};
         size_t getLength() const {return String::getLength();};

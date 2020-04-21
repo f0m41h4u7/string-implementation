@@ -1,6 +1,8 @@
 #include "str.hpp"
 #include <iostream>
 #include <regex>
+#include <climits>
+#include <cmath>
 
 /*********************************************************************
  *
@@ -53,13 +55,17 @@ void String::clean() {
 
 bool String::operator == (String const& str) const {
 	if(m_length != str.m_length) return false;
+	
+	char const* s1 = m_address.get();
+	char const* s2 = str.m_address.get();
 
-        for(size_t i = 0; i < m_length; ++i) {
-                if(m_address[i] != str.m_address[i]) return false;
+	for ( ; *s1 == *s2; s1++, s2++)
+                if (*s1 == '\0') return true;
+	return false;
+}
 
-        }
-        return true;
-
+bool String::operator != (String const& str) const {
+	return !(*this == str);
 }
 
 /*********************************************************************
@@ -119,18 +125,20 @@ Identifier& Identifier::operator = (Identifier const& str) {
 }
 
 bool Identifier::operator > (Identifier const& str) const {
-	size_t len = m_length < str.m_length ? m_length : str.m_length;
-	for(size_t i = 0; i < len; ++i) {
-		if(m_address[i] > str.m_address[i]) return true;
-		if(str.m_address[i] > m_address[i]) return false;
+	if (*this == str) return false;
+	return *(unsigned char *)m_address.get() < *(unsigned char *)str.m_address.get() ? false : true;
+}
 
-		if(i + 1 == m_length || i + 1 == str.m_length) return false;
-	}
-	return false;
+bool Identifier::operator < (Identifier const& str) const {
+        return !(*this > str);
 }
 
 bool Identifier::operator == (Identifier const& str) const {
         return (String)*this == (String)str;
+}
+
+bool Identifier::operator != (Identifier const& str) const {
+        return !(*this == str);
 }
 
 /*********************************************************************
@@ -177,6 +185,73 @@ DecimalString::DecimalString(const DecimalString& orig) {
         set(orig.m_address.get());
 }
 
+DecimalString& DecimalString::operator = (DecimalString const& str) {
+        set(str);
+        return *this;
+}
+
 bool DecimalString::operator == (DecimalString const& str) const {
         return (String)*this == (String)str;
+}
+
+bool DecimalString::operator != (DecimalString const& str) const {
+        return !(*this == str);
+}
+
+bool DecimalString::isInteger() const {
+	return m_length <= sizeof(INT_MAX)/sizeof(int) ? true : false;
+}
+
+bool DecimalString::operator > (DecimalString const& str) const {
+	if (*this == str) return false;
+
+	int t1 = std::stoi(m_address.get());
+	int t2 = std::stoi(str.m_address.get());
+
+	return t1 > t2 ? true : false;
+}
+
+bool DecimalString::operator < (DecimalString const& str) const {
+	if (*this == str) return false;
+        return !(*this > str);
+}
+
+void DecimalString::reverse(size_t length) {
+	int start = 0; 
+	int end = m_length -1; 
+	while (start < end) { 
+		std::swap(*(m_address.get()+start), *(m_address.get()+end)); 
+	        start++; 
+        	end--; 
+	}
+}
+
+DecimalString& DecimalString::operator - (DecimalString const& dec) {
+	int num = std::stoi(m_address.get()) - std::stoi(dec.m_address.get());
+
+        if (num == 0) {
+		clean();
+                return *this;
+        }
+
+	int i = 0;
+	m_address = std::make_unique<char[]>(sizeof(num)/sizeof(int));
+
+	bool isNegative = false;
+	if (num < 0) { 
+        	isNegative = true; 
+	        num = -num; 
+	}
+  
+	while (num != 0) { 
+	        int rem = num % 10; 
+        	m_address[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0'; 
+	        num = num/10; 
+	} 
+  
+	if (isNegative) m_address[i++] = '-'; 
+	m_length = i;
+  
+	reverse(i); 
+        return *this;
 }
