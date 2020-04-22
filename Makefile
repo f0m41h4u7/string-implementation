@@ -4,9 +4,6 @@ CWD = $(shell pwd)
 CFLAGS = --std=c++17 \
 	-I /usr/local/include
 
-all:
-	$(CXX) $(CFLAGS) -w -o run main.cpp str.cpp str.hpp
-
 dockerTest:
 	docker build --tag gtest .
 	docker run gtest
