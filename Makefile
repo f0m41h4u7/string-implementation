@@ -16,4 +16,4 @@ test:
 clean:
 	rm -f run test *.o
 
-.PHONY: all test build run
+.PHONY: all test dockerTest clean
