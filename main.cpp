@@ -4,13 +4,17 @@
 #include <chrono> 
 #include <regex>
 #include <string>
+#include <vector>
 
 using namespace std::chrono;
 
-const std::regex exprRegex("arr\[[0-9]+\][+\*\-]arr\[[0-9]+\]");
-const std::regex cleanRegex("arr\[[0-9]+\]clean");
-const std::regex lengthRegex("arr\[[0-9]+\]len");
-const std::regex equalityRegex("arr\[[0-9]+\]==arr\[[0-9]+\]");
+const std::regex exprRegex("arr\[[0-9]+\][ ]*[+\*\-][ ]*arr\[[0-9]+\]");
+const std::regex equalityRegex("arr\[[0-9]+\][ ]==[ ]*arr\[[0-9]+\]");
+const std::regex addRegex("add .+");
+const std::regex setRegex("set arr\[[0-9]+\] .+");
+const std::regex findRegex("find arr\[[0-9]+\] .+");
+const std::regex cleanRegex("clean arr\[[0-9]+\]");
+const std::regex lenRegex("len arr\[[0-9]+\]");
 
 inline bool isInteger(const std::string & s) {
 	if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
@@ -42,8 +46,7 @@ int main (int argc, char** argv) {
 
 	std::cout << "Allocating memory for String[" << len <<"]...\n";
 	auto start = high_resolution_clock::now();
-	//auto arr = std::make_unique<String*[]>(len);
-	String* arr[len];
+	std::vector<String*> arr(len);
 	auto stop = high_resolution_clock::now(); 
 	std::cout << "Done (" << duration_cast<microseconds>(stop - start).count() << " μs)\n\n";
 
@@ -58,23 +61,29 @@ int main (int argc, char** argv) {
 	std::cout << "Done\n\nCurrent values:\n";
 	for(int i = 0; i < len; ++i) std::cout << "arr[" << i << "] = " << arr[i]->getString() << "\n";
 	
-	std::cout << "\nNow you can start testing!\nUsage:\n\t- Operands: arr[0], ..., arr[n-1]\n\t- Common operators: ==, length, clean\n\t- Decimal operators: +, -, *\n\t- View current values: values\n\t- Add value: add\n\t- Set value: set\n\t- Exit: exit\nExamples:\n\t> arr[0]+arr[1]\n\t> arr[3]len\n\t> arr[0]clean\n\t> arr[2]==arr[4]\n\t> add qwerty\n\t> set arr[1] qwerty\nHave fun!\n\n";
+	std::cout << "\nNow you can start testing!\nUsage:\n\t- Operands: arr[0], ..., arr[n-1]\n\t- Common operators: ==, length, clean\n\t- Decimal operators: +, -, *\n\t- View current values: values\n\t- Add value: add\n\t- Set value: set\n\t- Find first (Identifiers only): find- Exit: exit\nExamples:\n\t> arr[0]+arr[1]\n\t> arr[3]len\n\t> arr[0]clean\n\t> arr[2]==arr[4]\n\t> add qwerty\n\t> set arr[1] qwerty\n\t> find arr[66] qwqw\nHave fun!\n\n";
 
 	while(true) {
-		std::cout << "> ";
-		std::string command;
-		std::cin >> command;
+	//	std::cout << "> ";
+		char com[100];
+		std::cin.getline(com, sizeof(com));
+		std::string command(com);
 
 		if (!command.compare("exit")) return 0;
 		if (!command.compare("values")) {
 			std::cout << "Current values:\n";
-			for(int i = 0; i < len; ++i) std::cout << "arr[" << i << "] = " << arr[i]->getString() << "\n";
+			for(int i = 0; i < arr.size(); ++i) std::cout << "arr[" << i << "] = " << arr[i]->getString() << "\n";
 		} 
 		else if (std::regex_match(command, exprRegex)) {
 			int order1 = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
                         command = command.substr(command.find("[")+1, command.size());
                         int order2 = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
 			char op = *std::find_if(command.begin(), command.end(), [](char c) {std::string symbols = "+-*/"; if (symbols.find(c) != std::string::npos) return 1; return 0; });	
+
+			if((order1 >= len) || (order1 < 0) || (order2 >= len) || (order2 < 0)) {
+				std::cout << "Order out of range!\n";
+				continue;
+			}
 
 			try {
 				DecimalString res;
@@ -83,35 +92,67 @@ int main (int argc, char** argv) {
 				switch (op) {
 					case '+':
 						res = x + y;
+						break;
 					case '-':
 						res = x - y ;
+						break;
 					case '*':
 						res = x * y ;
+						break;
 				}
 				std::cout << res.getString() << "\n";
-			} catch (std::exception const&) {std::cout << "Wrong types!";}
+			} catch (std::exception const&) {std::cout << "Wrong type!\n";}
 		} 
 		else if (std::regex_match(command, cleanRegex)) {
 			int order = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
-                        if (order < len) arr[order]->clean();
+                        if ((order < len) && (order >= 0)) arr[order]->clean();
                         else std::cout << "Order out of range!\n";
 		} 
-		else if (std::regex_match(command, lengthRegex)) {
+		else if (std::regex_match(command, lenRegex)) {
 			int order = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
-			if (order < len) std::cout << arr[order]->getLength() << "\n";
+			if ((order < len) && (order >= 0)) std::cout << arr[order]->getLength() << "\n";
 			else std::cout << "Order out of range!\n";
 		} 
 		else if (std::regex_match(command, equalityRegex)) {
 			int order1 = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
 			command = command.substr(command.find("[")+1, command.size());
 			int order2 = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
-				
-			bool res = (*arr[order1] == *arr[order2]) ? true : false;
-			std::cout << std::boolalpha << res << "\n";
-		} 
-		else {
-			std::cout << "Unknown command!\n";
+			
+			if ((order1 >= len) || (order1 < 0) || (order2 >= len) || (order2 < 0)) {
+				bool res = (*arr[order1] == *arr[order2]) ? true : false;
+				std::cout << std::boolalpha << res << "\n";
+			}
+			else std::cout << "Order out of range!\n";
 		}
+		else if (std::regex_match(command, addRegex)) {
+			std::string str = command.substr(4, command.size());
+			arr.push_back(new String(str.c_str()));
+			len++;
+		} 
+		else if(std::regex_match(command, setRegex)) {
+			int order = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
+			if ((order < len) && (order >= 0)) {
+				std::string str = command.substr(command.find("]")+2, command.size());
+				arr[order]->set(str.c_str());
+			}
+                        else std::cout << "Order out of range!\n";
+		}
+		else if(std::regex_match(command, findRegex)) {
+			int order = std::stoi(command.substr((command.find("[")+1), (command.find("]")-command.find("["))-1));
+			if ((order >= len) || (order < 0)) std::cout << "Order out of range!\n";
+			
+			std::string target = command.substr(command.find("]")+2, 1);
+			try {
+				auto x = static_cast<Identifier&> (*arr[order]);
+				int res = x.findFirst(target[0]);
+				if (res == -1) std::cout << "Not found.\n";
+				else std::cout << res << "\n";
+			} catch (std::bad_cast const&) {std::cout << "Not an Identifier string!\n";}
+		}
+		else {
+			if (!command.compare("\n")) std::cout << "Unknown command!\n";
+		}
+		std::cout << "> ";
 	}
 
 	return 0;

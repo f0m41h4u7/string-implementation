@@ -215,6 +215,11 @@ TEST(DecimalTest, LimitsMax) {
 	ASSERT_FALSE(dec.isInteger());
 }
 
+TEST(DecimalTest, IsInteger) {
+        DecimalString dec("2147");
+        ASSERT_FALSE(dec.isInteger());
+}
+
 TEST(DecimalTest, LimitsMin) {
         DecimalString dec("-2147483650000000");
         ASSERT_FALSE(dec.isInteger());
@@ -283,6 +288,80 @@ TEST(DecimalTest, Multiplication) {
         DecimalString dec2("1337");
         DecimalString res = dec1 * dec2;
         ASSERT_STREQ ("41897569", res.getString());
+}
+
+//************************************************
+
+TEST(TypecastTest, StrToDecRight) {
+        String dec1("31337");
+	String dec2("31337");
+	bool failed = false;
+	int res = 0;
+	try {
+		auto x = static_cast<DecimalString&> (dec1);
+		auto y = static_cast<DecimalString&> (dec2);
+        	res = std::stoi((x+y).getString());
+	} catch (std::exception const&) {failed = true;}
+        ASSERT_EQ (62674, res);
+	ASSERT_FALSE (failed);
+}
+
+TEST(TypecastTest, StrToDecWrong) {
+	String dec1("31337");
+        String dec2("qwrqer");
+        bool failed = false;
+        int res = 0;
+        try {
+                auto x = static_cast<DecimalString&> (dec1);
+                auto y = static_cast<DecimalString&> (dec2);
+                res = std::stoi((x+y).getString());
+        } catch (std::exception const&) {failed = true;}
+        ASSERT_EQ (0, res);
+        ASSERT_TRUE (failed);
+}
+
+TEST(TypecastTest, OperatorMoreIdentifierRight) {
+        String str1("qqqq");
+        String str2("abc");
+        bool failed = false, res = false;
+        try {
+		res = (static_cast<Identifier&> (str1) > static_cast<Identifier&> (str2)) ? true : false; 
+        } catch (std::exception const&) {failed = true;}
+        ASSERT_TRUE (res);
+        ASSERT_FALSE (failed);
+}
+
+TEST(TypecastTest, OperatorMoreIdentifierWrong) {
+        String str1("qqqq");
+        String str2("ab&c");
+        bool failed = false, res = false;
+        try {
+                res = (static_cast<Identifier&> (str1) > static_cast<Identifier&> (str2)) ? true : false;
+        } catch (std::exception const&) {failed = true;}
+        ASSERT_TRUE (failed);
+        ASSERT_FALSE (res);
+}
+
+TEST(TypecastTest, DecToStr) {
+        String str1("31337");
+        DecimalString str2("31337");
+        bool failed = false, res = false;
+        try {
+                res = (str1 == str2) ? true : false;
+        } catch (std::exception const&) {failed = true;}
+	ASSERT_TRUE (res);
+        ASSERT_FALSE (failed);
+}
+
+TEST(TypecastTest, IdentToStr) {
+        String str1("qqq");
+        Identifier str2("qqq");
+        bool failed = false, res = false;
+        try {
+                res = (str1 == str2) ? true : false;
+        } catch (std::exception const&) {failed = true;}
+        ASSERT_TRUE (res);
+        ASSERT_FALSE (failed);
 }
 
 int main(int argc, char** argv) {

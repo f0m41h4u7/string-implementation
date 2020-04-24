@@ -19,6 +19,8 @@ public:
 	void set(char const*);
 	void set(std::string_view);
 
+	void reverse(size_t);
+
 	operator std::string_view() const { return std::string_view(m_address.get(), m_length);}
 	bool operator == (String const&) const;
 	bool operator != (String const&) const;
@@ -63,7 +65,6 @@ public:
 	static bool isDecimal(char const*);
 
         DecimalString& numToStr(int);
-        void reverse(size_t);
 
 	DecimalString& operator = (DecimalString const&);
 	DecimalString& operator - (DecimalString const&);

@@ -125,6 +125,7 @@ Identifier& Identifier::operator = (Identifier const& str) {
 }
 
 bool Identifier::operator > (Identifier const& str) const {
+	if(!isIdentifier(m_address.get()) || !isIdentifier(str.m_address.get())) throw std::bad_cast();
 	if (*this == str) return false;
 	return *(unsigned char *)m_address.get() < *(unsigned char *)str.m_address.get() ? false : true;
 }
@@ -199,10 +200,12 @@ bool DecimalString::operator != (DecimalString const& str) const {
 }
 
 bool DecimalString::isInteger() const {
+	if(!isDecimal(m_address.get())) throw std::bad_cast();
 	return m_length <= sizeof(INT_MAX)/sizeof(int) ? true : false;
 }
 
 bool DecimalString::operator > (DecimalString const& str) const {
+	if(!isDecimal(m_address.get()) || !isDecimal(str.m_address.get())) throw std::bad_cast();
 	if (*this == str) return false;
 
 	int t1 = std::stoi(m_address.get());
@@ -216,7 +219,7 @@ bool DecimalString::operator < (DecimalString const& str) const {
         return !(*this > str);
 }
 
-void DecimalString::reverse(size_t length) {
+void String::reverse(size_t length) {
 	int start = 0; 
 	int end = m_length -1; 
 	while (start < end) { 
@@ -255,16 +258,19 @@ DecimalString& DecimalString::numToStr (int num) {
 }
 
 DecimalString& DecimalString::operator - (DecimalString const& dec) {
+	if(!isDecimal(m_address.get()) || !isDecimal(dec.m_address.get())) throw std::bad_cast();
 	int num = std::stoi(m_address.get()) - std::stoi(dec.m_address.get());
 	return numToStr(num);
 }
 
 DecimalString& DecimalString::operator + (DecimalString const& dec) {
+	if(!isDecimal(m_address.get()) || !isDecimal(dec.m_address.get())) throw std::bad_cast();
         int num = std::stoi(m_address.get()) + std::stoi(dec.m_address.get());
         return numToStr(num);
 }
 
 DecimalString& DecimalString::operator * (DecimalString const& dec) {
+	if(!isDecimal(m_address.get()) || !isDecimal(dec.m_address.get())) throw std::bad_cast();
         int num = std::stoi(m_address.get()) * std::stoi(dec.m_address.get());
         return numToStr(num);
 }
