@@ -27,7 +27,7 @@ public:
 	size_t getLength() const {return m_length;};
 };
 
-class Identifier : protected String
+class Identifier : public String
 {
 public:
 	Identifier();
@@ -36,9 +36,8 @@ public:
 	Identifier(const Identifier&);
 	~Identifier();
 
-	static bool isIdentifier(char const*);
-
 	int findFirst(char) const;
+	static bool isIdentifier(char const*);
 
 	Identifier& operator = (Identifier const&);
 	bool operator > (Identifier const&) const;
@@ -50,7 +49,7 @@ public:
 	size_t getLength() const {return String::getLength();};
 };
 
-class DecimalString : protected String
+class DecimalString : public String
 {
 public:
 	DecimalString();
@@ -60,13 +59,16 @@ public:
 	~DecimalString();
 
 	bool isInteger() const;
+
 	static bool isDecimal(char const*);
 
-	void numToStr(int);
-	void reverse(size_t);
+        DecimalString& numToStr(int);
+        void reverse(size_t);
 
 	DecimalString& operator = (DecimalString const&);
 	DecimalString& operator - (DecimalString const&);
+	DecimalString& operator * (DecimalString const&);
+	DecimalString& operator + (DecimalString const&);
 
 	bool operator > (DecimalString const&) const;
 	bool operator < (DecimalString const&) const;

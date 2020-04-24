@@ -226,9 +226,7 @@ void DecimalString::reverse(size_t length) {
 	}
 }
 
-DecimalString& DecimalString::operator - (DecimalString const& dec) {
-	int num = std::stoi(m_address.get()) - std::stoi(dec.m_address.get());
-
+DecimalString& DecimalString::numToStr (int num) {
         if (num == 0) {
 		clean();
                 return *this;
@@ -254,4 +252,19 @@ DecimalString& DecimalString::operator - (DecimalString const& dec) {
   
 	reverse(i); 
         return *this;
+}
+
+DecimalString& DecimalString::operator - (DecimalString const& dec) {
+	int num = std::stoi(m_address.get()) - std::stoi(dec.m_address.get());
+	return numToStr(num);
+}
+
+DecimalString& DecimalString::operator + (DecimalString const& dec) {
+        int num = std::stoi(m_address.get()) + std::stoi(dec.m_address.get());
+        return numToStr(num);
+}
+
+DecimalString& DecimalString::operator * (DecimalString const& dec) {
+        int num = std::stoi(m_address.get()) * std::stoi(dec.m_address.get());
+        return numToStr(num);
 }

@@ -271,6 +271,20 @@ TEST(DecimalTest, SubtractionNegative) {
         ASSERT_STREQ ("-32674", res.getString());
 }
 
+TEST(DecimalTest, Addition) {
+        DecimalString dec1("-31337");
+        DecimalString dec2("-1337");
+        DecimalString res = dec1 + dec2;
+        ASSERT_STREQ ("-32674", res.getString());
+}
+
+TEST(DecimalTest, Multiplication) {
+        DecimalString dec1("31337");
+        DecimalString dec2("1337");
+        DecimalString res = dec1 * dec2;
+        ASSERT_STREQ ("41897569", res.getString());
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
