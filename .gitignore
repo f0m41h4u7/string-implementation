@@ -1,5 +1,6 @@
 *.swp
 main
+interactiveTest
 test
 run
 *.o
