@@ -18,9 +18,6 @@ public:
 	void clean();
 	void set(char const*);
 
-	void reverse(size_t);
-
-	operator std::string_view() const { return std::string_view(m_address.get(), m_length);}
 	bool operator == (String const&) const;
 	bool operator != (String const&) const;
 
