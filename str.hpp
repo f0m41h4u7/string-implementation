@@ -17,7 +17,6 @@ public:
 
 	void clean();
 	void set(char const*);
-	void set(std::string_view);
 
 	void reverse(size_t);
 
@@ -38,6 +37,7 @@ public:
 	Identifier(const Identifier&);
 	~Identifier();
 
+	void set(char const*);
 	int findFirst(char) const;
 	static bool isIdentifier(char const*);
 
@@ -61,7 +61,7 @@ public:
 	~DecimalString();
 
 	bool isInteger() const;
-
+	void set(char const*);
 	static bool isDecimal(char const*);
 
         DecimalString& numToStr(int);

@@ -18,18 +18,14 @@ String::~String(){}
 
 void String::set(char const* cString) {
 	if(cString != nullptr) {
-		set(std::string_view(cString, strlen(cString)));
+		m_length = strlen(cString);
+		m_address = std::make_unique<char[]>(m_length + 1);
+		memcpy(m_address.get(), cString, m_length);
+		m_address.get()[m_length] = '\0';
         }
 	else {
 		throw std::bad_alloc();
 	}
-}
-
-void String::set(std::string_view sv) {
-	m_length = sv.size();
-	m_address = std::make_unique<char[]>(m_length + 1);
-	memcpy(m_address.get(), sv.data(), m_length);
-	m_address.get()[m_length] = '\0';
 }
 
 String::String(char const* cString) {
@@ -44,7 +40,7 @@ String::String(char c) {
 }
 
 String::String(const String& orig) {
-	set(orig);
+	set(orig.m_address.get());
 }
 
 void String::clean() {
@@ -78,6 +74,20 @@ Identifier::Identifier() {}
 
 Identifier::~Identifier() {}
 
+void Identifier::set(char const* cString) {
+        if(cString != nullptr) {
+		if(isIdentifier(cString)) {
+	                m_length = strlen(cString);
+	                m_address = std::make_unique<char[]>(m_length + 1);
+        	        memcpy(m_address.get(), cString, m_length);
+                	m_address.get()[m_length] = '\0';
+		} else clean();
+        }
+        else {
+                throw std::bad_alloc();
+        }
+}
+
 bool Identifier::isIdentifier(char const* str) {
         const std::regex identifierRegex("^[_a-zA-Z][_a-zA-Z0-9]{0,30}$");
         if(std::regex_match(str, identifierRegex)) {
@@ -87,14 +97,7 @@ bool Identifier::isIdentifier(char const* str) {
 }
 
 Identifier::Identifier(char const * cString) {
-	if(cString != nullptr) {
-		if(isIdentifier(cString))
-			set(cString);
-		else
-			clean();
-	} else {
-		throw std::bad_alloc();
-	}
+	set(cString);
 }
 
 Identifier::Identifier(char c) {
@@ -120,7 +123,7 @@ int Identifier::findFirst(char c) const {
 }
 
 Identifier& Identifier::operator = (Identifier const& str) {
-	set(str);
+	set(str.m_address.get());
 	return *this;
 }
 
@@ -152,6 +155,20 @@ DecimalString::DecimalString() {}
 
 DecimalString::~DecimalString() {}
 
+void DecimalString::set(char const* cString) {
+        if(cString != nullptr) {
+                if(isDecimal(cString)) {
+                        m_length = strlen(cString);
+                        m_address = std::make_unique<char[]>(m_length + 1);
+                        memcpy(m_address.get(), cString, m_length);
+                        m_address.get()[m_length] = '\0';
+                } else clean();
+        }
+        else {
+                throw std::bad_alloc();
+        }
+}
+
 bool DecimalString::isDecimal(char const* str) {
 	const std::regex identifierRegex("^[-+]?[0-9]+$");
         if(std::regex_match(str, identifierRegex)) {
@@ -161,14 +178,7 @@ bool DecimalString::isDecimal(char const* str) {
 }
 
 DecimalString::DecimalString(char const * cString) {
-        if(cString != nullptr) {
-                if(isDecimal(cString))
-                        set(cString);
-                else
-                        clean();
-        } else {
-                throw std::bad_alloc();
-        }
+	set(cString);
 }
 
 DecimalString::DecimalString(char c) {
@@ -187,7 +197,7 @@ DecimalString::DecimalString(const DecimalString& orig) {
 }
 
 DecimalString& DecimalString::operator = (DecimalString const& str) {
-        set(str);
+        set(str.m_address.get());
         return *this;
 }
 
