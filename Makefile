@@ -5,7 +5,7 @@ CFLAGS = --std=c++17 \
 	-I /usr/local/include
 
 all:
-	$(CXX) $(CFLAGS) -w -o interactiveTest main.cpp str.cpp str.hpp
+	$(CXX) $(CFLAGS) -w -o interactiveTest main.cpp String.hpp Identifier.hpp DecimalString.hpp String.cpp Identifier.cpp DecimalString.cpp
 
 docker:
 	docker build --tag gtest .
@@ -13,8 +13,8 @@ docker:
 
 test:
 	$(CXX) -c $(CFLAGS) test.cpp
-	$(CXX) -c $(CFLAGS) str.cpp
-	$(CXX) -w -o test test.o str.o -L /usr/local/lib -l gtest -l pthread
+	$(CXX) -c $(CFLAGS) String.cpp Identifier.cpp DecimalString.cpp
+	$(CXX) -w -o test test.o String.o Identifier.o DecimalString.o -L /usr/local/lib -l gtest -l pthread
 
 clean:
 	rm -f interactiveTest test *.o

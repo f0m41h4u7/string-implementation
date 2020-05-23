@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
-#include "str.hpp"
+#include "String.hpp"
+#include "Identifier.hpp"
+#include "DecimalString.hpp"
 
 TEST(StringTest, CharPtrConstructor) { 
 	String str("Hello world!");

@@ -1,4 +1,6 @@
-#include "str.hpp"
+#include "String.hpp"
+#include "Identifier.hpp"
+#include "DecimalString.hpp"
 #include <iostream>
 #include <cstring>
 #include <regex>
