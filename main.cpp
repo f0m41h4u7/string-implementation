@@ -71,9 +71,9 @@ int main (int argc, char** argv)
     std::cout << "\nNow you can start testing!\nUsage:\n\t- Operands: arr[0], ..., arr[n-1]";
     std::cout << "\n\t- Common operators: ==, length, clean\n\t- Decimal operators:";
     std::cout << "+, -, *\n\t- View current values: values\n\t- Add value: add";
-    std::cout << "\n\t- Set value: set\n\t- Find first (Identifiers only): find- Exit:";
-    std::cout << "exit\nExamples:\n\t> arr[0]+arr[1]\n\t> arr[3]len\n\t> ";
-    std::cout << "arr[0]clean\n\t> arr[2]==arr[4]\n\t> add qwerty\n\t> set arr[1] qwerty";
+    std::cout << "\n\t- Set value: set\n\t- Find first (Identifiers only): find\n\t- Exit:";
+    std::cout << "exit\nExamples:\n\t> arr[0]+arr[1]\n\t> len arr[3]\n\t> ";
+    std::cout << "clean arr[0]\n\t> arr[2]==arr[4]\n\t> add qwerty\n\t> set arr[1] qwerty";
     std::cout << "\n\t> find arr[66] qwqw\nHave fun!\n\n";
     
     while(true)
